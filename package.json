@@ -1,0 +1,50 @@
+{
+  "name": "remote-process-cleanup",
+  "displayName": "Remote Process Cleanup",
+  "description": "Automatically detects and cleans up orphaned vscode-server processes on remote hosts",
+  "version": "0.1.0",
+  "license": "MIT",
+  "publisher": "jessiemac",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "keywords": [
+    "remote",
+    "ssh",
+    "cleanup",
+    "process",
+    "orphan",
+    "memory",
+    "sagemaker"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "remoteProcessCleanup.cleanNow",
+        "title": "Remote Process Cleanup: Clean Now"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src",
+    "test": "node --test out/test/**/*.test.js",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.100.0",
+    "typescript": "^5.7.0"
+  }
+}
