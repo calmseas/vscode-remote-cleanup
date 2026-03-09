@@ -67,5 +67,7 @@ describe('killOrphans', () => {
         );
 
         assert.strictEqual(result.errors.length, 1);
+        assert.strictEqual(result.killed, 0);
+        assert.strictEqual(result.totalRssFreed, 0);
     });
 });
