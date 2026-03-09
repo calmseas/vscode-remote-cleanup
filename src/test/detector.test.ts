@@ -122,7 +122,9 @@ describe('findOrphans', () => {
     it('includes descendant RSS in total', () => {
         const result = findOrphans(200, procPath);
         assert.ok(result);
-        assert.ok(result.totalRssBytes > 0);
+        // Orphan ext host (8000 pages) + its child tsserver (3000 pages) + orphan fileWatcher (2000 pages)
+        // All × PAGE_SIZE (4096) = 53,248,000
+        assert.strictEqual(result.totalRssBytes, (8000 + 3000 + 2000) * 4096);
     });
     it('returns undefined when parent is not server-main.js', () => {
         const result = findOrphans(501, procPath);
