@@ -109,7 +109,7 @@ export function findOrphans(
         if (childPid === currentPid) { continue; }
         const info = getProcessInfo(childPid, procPath);
         if (!info) { continue; }
-        if (info.type === 'extensionHost' || info.type === 'fileWatcher') {
+        if (info.type === 'extensionHost') {
             const descendants = getDescendants(childPid, procPath);
             for (const desc of descendants) {
                 totalRssBytes += desc.rssBytes;

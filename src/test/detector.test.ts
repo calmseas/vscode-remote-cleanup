@@ -102,12 +102,12 @@ describe('findOrphans', () => {
     });
     after(() => cleanupFakeProc(procPath));
 
-    it('identifies orphaned extensionHost and fileWatcher processes', () => {
+    it('identifies orphaned extensionHost processes but not fileWatchers', () => {
         const result = findOrphans(200, procPath);
         assert.ok(result);
         assert.strictEqual(result.serverPid, 100);
         const orphanPids = result.orphans.map(o => o.pid).sort();
-        assert.deepStrictEqual(orphanPids, [201, 301]);
+        assert.deepStrictEqual(orphanPids, [201]);
     });
     it('never includes current PID in orphans', () => {
         const result = findOrphans(200, procPath);
@@ -122,12 +122,36 @@ describe('findOrphans', () => {
     it('includes descendant RSS in total', () => {
         const result = findOrphans(200, procPath);
         assert.ok(result);
-        // Orphan ext host (8000 pages) + its child tsserver (3000 pages) + orphan fileWatcher (2000 pages)
-        // All × PAGE_SIZE (4096) = 53,248,000
-        assert.strictEqual(result.totalRssBytes, (8000 + 3000 + 2000) * 4096);
+        // Orphan ext host (8000 pages) + its child tsserver (3000 pages)
+        // All × PAGE_SIZE (4096) = 45,056,000
+        assert.strictEqual(result.totalRssBytes, (8000 + 3000) * 4096);
+    });
+    it('never includes fileWatcher in orphans', () => {
+        const result = findOrphans(200, procPath);
+        assert.ok(result);
+        assert.ok(!result.orphans.some(o => o.type === 'fileWatcher'));
     });
     it('returns undefined when parent is not server-main.js', () => {
         const result = findOrphans(501, procPath);
         assert.strictEqual(result, undefined);
+    });
+});
+
+describe('findOrphans — single session (no orphans)', () => {
+    let procPath: string;
+    before(() => {
+        procPath = createFakeProc();
+        addFakeProcess(procPath, 100, 1, ['node', 'server-main.js', '--start-server']);
+        addFakeProcess(procPath, 200, 100, ['node', 'bootstrap-fork', '--type=extensionHost'], 5000);
+        addFakeProcess(procPath, 300, 100, ['node', 'bootstrap-fork', '--type=fileWatcher'], 2000);
+        addFakeProcess(procPath, 400, 100, ['node', 'bootstrap-fork', '--type=ptyHost'], 1000);
+    });
+    after(() => cleanupFakeProc(procPath));
+
+    it('finds zero orphans when only one extensionHost exists', () => {
+        const result = findOrphans(200, procPath);
+        assert.ok(result);
+        assert.strictEqual(result.orphans.length, 0);
+        assert.strictEqual(result.totalRssBytes, 0);
     });
 });
