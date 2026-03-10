@@ -2,7 +2,7 @@
   "name": "remote-process-cleanup",
   "displayName": "Remote Process Cleanup",
   "description": "Automatically detects and cleans up orphaned vscode-server processes on remote hosts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "publisher": "jessiemac",
   "engines": {
